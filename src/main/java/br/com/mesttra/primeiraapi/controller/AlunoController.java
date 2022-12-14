@@ -4,35 +4,47 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import br.com.mesttra.primeiraapi.entity.Aluno;
-import br.com.mesttra.primeiraapi.repository.AlunoRepository;
+import br.com.mesttra.primeiraapi.service.AlunoService;
 
 @RestController
 @RequestMapping ("/alunos")
 public class AlunoController {
 
 	@Autowired
-	AlunoRepository repository;
+	AlunoService service;
 	
 	@PostMapping
+	@ResponseStatus (code = HttpStatus.CREATED)
 	public void cadastrarAluno(@RequestBody Aluno aluno) {
-		repository.save(aluno);
+		service.cadastrarAluno(aluno);;
 	}
 	
 	@GetMapping (path = "/{matricula}")
-	public Optional<Aluno> verAluno(@PathVariable Long matricula) {
-		return repository.findById(matricula);
+	public Aluno verAluno(@PathVariable Long matricula) {
+		return service.verAluno(matricula);
+	}
+	
+	@GetMapping (path = "/{cpf}/busca-cpf")
+	public Aluno verAlunoPorCpf(@PathVariable String cpf) {
+		return service.verAlunoPorCpf(cpf);
 	}
 	
 	@GetMapping
 	public List<Aluno> verTodos() {
-		return (List<Aluno>) repository.findAll();
+		return service.verTodos();
+	}
+	
+	@PutMapping (path = "/{matricula}")
+	public void atualizarAluno(@PathVariable Long matricula, @RequestBody Aluno aluno) {
+		service.atualizarAluno(aluno);
 	}
 	
 	@DeleteMapping (path = "/{matricula}")
 	public void excluirAluno(@PathVariable Long matricula) {
-		repository.deleteById(matricula);
+		service.excluirAluno(matricula);
 	}
 }
